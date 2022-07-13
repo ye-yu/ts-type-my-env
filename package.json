@@ -4,7 +4,7 @@
   "description": "Generate typings for your .env! Remember to add the directory `types` into your `typeRoots` in your tsconfig file.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "tsc && ./postbuild",
     "cbuild": "rm -rf .tsbuildinfo && rm -rf dist && npm run build",
     "start": "ts-node --files src/index.ts"
