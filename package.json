@@ -1,14 +1,14 @@
 {
   "name": "ts-type-my-env",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Generate typings for your .env! Remember to add the directory `types` into your `typeRoots` in your tsconfig file.",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node --files src/index.ts"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["dotenv"],
+  "author": "Ye Yu <rafolwen98@gmail.com>",
   "license": "GPL-3.0",
   "devDependencies": {
     "@types/jest": "^28.1.5",
