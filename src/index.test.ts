@@ -1,4 +1,5 @@
 import { parseEnv } from "./dotenv";
+import { createType } from "./dts.util";
 
 // fixtures
 const plainEnv = `
@@ -26,4 +27,4 @@ const documentedWithInline = `
 KEY=value #inline
 `;
 
-console.log({ documentedWithInline, r: parseEnv(documentedWithInline) });
+console.log(createType(parseEnv(documentedEnv)));
