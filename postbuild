@@ -2,4 +2,6 @@
 rm -rf dist/*.spec*
 cp package.json dist
 cp package-lock.json dist
+cp README.md dist
+cp LICENSE dist
 ./append-shebang
