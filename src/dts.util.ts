@@ -16,7 +16,17 @@ const template = `declare var process: NodeJS.Process & {
 `;
 
 export function createType(dotenvFile: ParseResult[]) {
-  const vars = dotenvFile.map(({ document, inline, key, type }) => {
+  const vars = compileToTypeScript(dotenvFile);
+
+  const allVars = vars.join("\n\n");
+
+  const dtsContent = template.replace(/@@inject_here@@/, allVars);
+
+  return dtsContent;
+}
+
+export function compileToTypeScript(dotenvFile: ParseResult[]) {
+  return dotenvFile.map(({ document, inline, key, type }) => {
     let ts = "";
 
     if (document) {
@@ -34,10 +44,4 @@ export function createType(dotenvFile: ParseResult[]) {
     ts += `    ${key}?: string;${inline ? " " + inline : ""}`;
     return ts;
   });
-
-  const allVars = vars.join("\n\n");
-
-  const dtsContent = template.replace(/@@inject_here@@/, allVars);
-
-  return dtsContent;
 }
