@@ -51,7 +51,7 @@ export function parseEnv(src: string | Buffer) {
       const regex = lineWithInlineComment();
       let m: RegExpExecArray | null;
       if ((m = regex.exec(trimmed)) !== null) {
-        const [, key, value, inline] = m;
+        const [, key, value = "", inline = ""] = m;
 
         const trimmedValue = value.trim();
 
