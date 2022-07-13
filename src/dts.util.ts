@@ -5,8 +5,7 @@ const template = `declare var process: NodeJS.Process & {
     /**
      * Can be used to change the default timezone at runtime
      */
-    TZ?: string;
-@@inject_here@@
+    TZ?: string;@@inject_here@@
   };
 };
 `;
@@ -14,7 +13,7 @@ const template = `declare var process: NodeJS.Process & {
 export function createType(dotenvFile: ParseResult[]) {
   const vars = compileToTypeScript(dotenvFile);
 
-  const allVars = vars.join("\n\n");
+  const allVars = vars.length ? "\n\n" + vars.join("\n\n") : "";
 
   const dtsContent = template.replace(/@@inject_here@@/, allVars);
 
