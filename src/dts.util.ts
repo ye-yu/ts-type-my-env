@@ -6,10 +6,6 @@ const template = `declare var process: NodeJS.Process & {
      * Can be used to change the default timezone at runtime
      */
     TZ?: string;
-    /**
-     * This is just a sample to test that
-     * this typing is valid for typescript.
-     */
 @@inject_here@@
   };
 };
