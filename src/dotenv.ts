@@ -46,7 +46,7 @@ export function parseEnv(src: string | Buffer) {
     const trimmed = line.trimEnd();
     if (!trimmed.length) continue;
     if (trimmed.match(/^\s*#/g)) {
-      reuseableDocument.push(trimmed.replace(/\s*#/g, "*"));
+      reuseableDocument.push(trimmed.replace(/^\s*#/g, "*"));
     } else {
       const regex = lineWithInlineComment();
       let m: RegExpExecArray | null;
