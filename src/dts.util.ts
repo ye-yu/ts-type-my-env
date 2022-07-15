@@ -1,14 +1,21 @@
 import { ParseResult } from "./dotenv";
 
-const template = `declare var process: NodeJS.Process & {
-  env: {
-    /**
-     * Can be used to change the default timezone at runtime
-     */
-    TZ?: string;@@inject_here@@
+const template = `// generated using \`npx type-my-env\`
+// Autocomplete your environment variables!
+
+declare namespace NodeJS {
+  export interface Process {
+    env: {
+      /**
+       * Can be used to change the default timezone at runtime
+       */
+      TZ?: string;@@inject_here@@
+    };
   };
-};
+}
 `;
+
+const indentation = "      ";
 
 export function createType(dotenvFile: ParseResult[]) {
   const vars = compileToTypeScript(dotenvFile);
@@ -25,18 +32,21 @@ export function compileToTypeScript(dotenvFile: ParseResult[]) {
     let ts = "";
 
     if (document) {
-      ts += "    /**\n     ";
-      ts += document.join("\n     ");
+      ts += indentation + "/**\n";
+      ts += indentation + " ";
+      ts += document.join("\n" + indentation + " ");
       ts += "\n";
 
       if (type) {
-        ts += "     *\n     * The infered type is " + type;
+        ts += indentation + " *\n";
+        ts += indentation + " * The infered type is " + type + ".";
       }
-      ts += "\n     */";
+      ts += "\n";
+      ts += indentation + " */";
       ts += "\n";
     }
 
-    ts += `    ${key}?: string;${inline ? " " + inline : ""}`;
+    ts += `${indentation}${key}?: string;${inline ? " " + inline : ""}`;
     return ts;
   });
 }
