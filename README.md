@@ -59,7 +59,7 @@ declare var process: NodeJS.Process & {
 };
 ```
 
-Now, whenever you type your `process.env.` in you code editor, you will benefit
+Now, whenever you type your `process.env.` in your code editor, you will benefit
 from the typings autocomplete!
 
 ![autocomplete](https://imgur.com/jxR2XrI.png)
