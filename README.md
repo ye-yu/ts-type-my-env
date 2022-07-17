@@ -29,35 +29,33 @@ The `type-my-env.d.ts` will contain:
 
 ```ts
 declare namespace NodeJS {
-  export interface Process {
-    env: {
-      /**
-       * Can be used to change the default timezone at runtime
-       */
-      TZ?: string;
+  interface ProcessEnv {
+    /**
+     * Can be used to change the default timezone at runtime
+     */
+    TZ?: string;
 
-      APP_NAME?: string;
+    APP_NAME?: string;
 
-      /**
-       * Set to dev or debug for local envinroment
-       *
-       * The infered type is string.
-       */
-      APP_ENV?: string;
+    /**
+     * Set to dev or debug for local envinroment
+     *
+     * The infered type is string.
+     */
+    APP_ENV?: string;
 
-      /**
-       * The app key for authentication token generation
-       * You can also comment on multiple line.
-       *
-       * The infered type is string.
-       */
-      APP_KEY?: string; // is also accept inline, but this will not appear in the JSDoc
+    /**
+     * The app key for authentication token generation
+     * You can also comment on multiple line.
+     *
+     * The infered type is string.
+     */
+    APP_KEY?: string; // is also accept inline, but this will not appear in the JSDoc
 
-      APP_DEBUG?: string;
+    APP_DEBUG?: string;
 
-      APP_URL?: string;
-    };
-  };
+    APP_URL?: string;
+  }
 }
 ```
 
