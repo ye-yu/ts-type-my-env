@@ -4,18 +4,16 @@ const template = `// generated using \`npx type-my-env\`
 // Autocomplete your environment variables!
 
 declare namespace NodeJS {
-  export interface Process {
-    env: {
-      /**
-       * Can be used to change the default timezone at runtime
-       */
-      TZ?: string;@@inject_here@@
-    };
-  };
+  interface ProcessEnv {
+    /**
+     * Can be used to change the default timezone at runtime
+     */
+    TZ?: string;@@inject_here@@
+  }
 }
 `;
 
-const indentation = "      ";
+const indentation = "    ";
 
 export function createType(dotenvFile: ParseResult[]) {
   const vars = compileToTypeScript(dotenvFile);
