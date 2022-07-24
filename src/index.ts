@@ -1,7 +1,42 @@
 import path from "path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { parseEnv } from "./dotenv";
-import { createType } from "./dts.util";
+import { parseEnv } from "./dotenv.js";
+import { createType } from "./dts.util.js";
+import { ArgumentParser } from "argparse";
+import chalk from "chalk";
+import packageJson from "./package.cjs";
+
+const description =
+  chalk.bgBlue("TS") + " Autocomplete your environment variable!";
+
+const argparser = new ArgumentParser({
+  description,
+  prog: "[npx] type-my-env",
+});
+
+argparser.add_argument("-r", "--reverse", {
+  help: "parse type-my-env.d.ts back to .env file instead",
+  action: "store_true",
+});
+
+argparser.add_argument("-s", "--string-index", {
+  help: "add string indexing to the type declaration",
+  action: "store_true",
+});
+
+argparser.add_argument("-c", "--create", {
+  help: "create a new environment variable",
+  type: "string",
+  dest: "ENV",
+});
+
+argparser.add_argument("-v", "--version", {
+  action: "version",
+  version: `type-my-env v${packageJson.version} - https://github.com/ye-yu/ts-type-my-env`,
+});
+
+const parsedArgs = argparser.parse_args();
+console.log({ parsedArgs });
 
 let dotenvPath = path.resolve(process.cwd(), ".env");
 let typesDirPath = path.resolve(process.cwd(), "types");
