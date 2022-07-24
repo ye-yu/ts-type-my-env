@@ -1,6 +1,6 @@
 {
   "name": "type-my-env",
-  "version": "1.0.6-alpha.1",
+  "version": "1.1.0-alpha.1",
   "description": "Generate typings for your .env! Remember to add the directory `types` into your `typeRoots` in your tsconfig file.",
   "main": "index.js",
   "type": "module",
