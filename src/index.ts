@@ -1,6 +1,5 @@
 import path from "path";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { parseEnv } from "./dotenv.js";
+import { parseEnv } from "./dotenv-parser.js";
 import { createType } from "./dts.util.js";
 import { ArgumentParser } from "argparse";
 import chalk from "chalk";

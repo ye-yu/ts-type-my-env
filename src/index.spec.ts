@@ -1,4 +1,4 @@
-import { parseEnv, ParseResult } from "./dotenv";
+import { parseEnv, ParseResult } from "./dotenv-parser";
 import { compileToTypeScript } from "./dts.util";
 
 // fixtures

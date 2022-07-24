@@ -1,4 +1,4 @@
-import { ParseResult } from "./dotenv";
+import { ParseResult } from "./dotenv-parser.js";
 
 const template = `// generated using \`npx type-my-env\`
 // Autocomplete your environment variables!
