@@ -44,7 +44,12 @@ export function compileToTypeScript(dotenvFile: ParseResult[]) {
       ts += "\n";
     }
 
-    ts += `${indentation}${key}?: string;${inline ? " " + inline : ""}`;
+    if (inline) {
+      ts += indentation + inline;
+      ts += "\n";
+    }
+
+    ts += `${indentation}${key}?: string;`;
     return ts;
   });
 }
