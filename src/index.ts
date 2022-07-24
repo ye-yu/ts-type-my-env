@@ -4,7 +4,8 @@ import { parseEnv } from "./dotenv.js";
 import { createType } from "./dts.util.js";
 import { ArgumentParser } from "argparse";
 import chalk from "chalk";
-import packageJson from "./package.cjs";
+import _packageJson from "./package.cjs";
+const packageJson = await _packageJson;
 
 const description =
   chalk.bgBlue("TS") + " Autocomplete your environment variable!";
