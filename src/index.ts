@@ -33,7 +33,11 @@ argparser.add_argument("-c", "--create", {
 
 argparser.add_argument("-v", "--version", {
   action: "version",
-  version: `type-my-env v${packageJson.version} - https://github.com/ye-yu/ts-type-my-env`,
+  version: `type-my-env v${
+    packageJson.version
+  } - https://github.com/ye-yu/ts-type-my-env${
+    packageJson.buildhash ? ` (${packageJson.buildhash})` : ""
+  }`,
 });
 
 const parsedArgs = argparser.parse_args();
