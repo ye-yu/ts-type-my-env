@@ -34,12 +34,6 @@ export function compileToTypeScript(dotenvFile: ParseResult[]) {
       ts += indentation + " ";
       ts += document.join("\n" + indentation + " ");
       ts += "\n";
-
-      if (type) {
-        ts += indentation + " *\n";
-        ts += indentation + " * The infered type is " + type + ".";
-      }
-      ts += "\n";
       ts += indentation + " */";
       ts += "\n";
     }
