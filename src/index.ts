@@ -13,6 +13,13 @@ import chalk from "chalk";
 import _packageJson from "./package.cjs";
 const packageJson = await _packageJson;
 import parseDeclarationFile from "./ts-parser.cjs";
+import { createConsoleLogger } from "./console.js";
+
+const console = createConsoleLogger();
+
+process.on("uncaughtException", (e) => {
+  console.error(e.message);
+});
 
 const description =
   chalk.bgBlue("TS") + " Autocomplete your environment variable!";
@@ -55,37 +62,82 @@ let typePath = path.resolve(process.cwd(), "types", "type-my-env.d.ts");
 let encoding = "utf8" as const;
 
 if (parsedArgs.reverse) {
+  console.info("Generating .env file from types/type-my-env.d.ts");
   if (!existsSync(typePath))
     throw new Error("declaration file does not exist!");
   const declarations = await parseDeclarationFile(typePath);
-  console.log(declarations);
+  const envLines = declarations.map(({ jsDocJoined, inlineComments, env }) => {
+    console.info("Writing env for: " + env);
+    let str = "";
+    if (jsDocJoined) {
+      str += jsDocJoined
+        .split("\n")
+        .map((e) => `# ${e}`)
+        .join("\n");
+      str += "\n";
+    }
+
+    str += `${env}=`;
+
+    if (inlineComments) {
+      str += " #";
+      str += inlineComments.map((e) => e.replace(/\/\//g, "")).join(", ");
+    }
+
+    return str;
+  });
+  if (existsSync(dotenvPath)) {
+    console.warn("Overwriting existing .env file!");
+  }
+  writeFileSync(dotenvPath, envLines.join("\n\n"), { encoding: "utf8" });
+  console.info("Done!");
   process.exit(0);
 }
 
-function getParsedDotEnv() {
-  if (!existsSync(dotenvPath)) throw new Error(".env does not exist");
+function getParsedDotEnv(createMode = false) {
+  if (!existsSync(dotenvPath)) {
+    if (createMode) {
+      console.info(".env is not found. Writing a new one...");
+      writeFileSync(dotenvPath, "", { encoding });
+    } else {
+      throw new Error("Error: .env does not exist!");
+    }
+  }
   const content = readFileSync(dotenvPath, { encoding });
   const parsedEnv = parseEnv(content);
-  return parsedEnv;
+  return { content, parsedEnv };
 }
 
-const parsedEnv = getParsedDotEnv();
+const { content, parsedEnv } = getParsedDotEnv(!!parsedArgs.ENV);
 
 if (parsedArgs.ENV) {
-  console.log("Creating environment variable:", parsedArgs.ENV);
+  console.info("Creating a environment variable:", parsedArgs.ENV);
   if (parsedEnv.find((e) => e.key === parsedArgs.ENV)) {
     console.warn(`Variable ${parsedArgs.ENV} already exists in .env file!`);
   } else {
-    appendFileSync(dotenvPath, `\n${parsedArgs.ENV}=`, {
-      encoding: "utf8",
-    });
+    appendFileSync(
+      dotenvPath,
+      `${content.at(-1) === "\n" || content.length === 0 ? "" : "\n"}${
+        parsedArgs.ENV
+      }=`,
+      {
+        encoding: "utf8",
+      }
+    );
     parsedEnv.push({
       key: parsedArgs.ENV,
       type: "string",
     });
   }
-  console.log("Updating declaration file");
+  console.info("Updating declaration file");
 }
 
 if (!existsSync(typesDirPath)) mkdirSync(typesDirPath);
 writeFileSync(typePath, createType(parsedEnv));
+
+console.info("");
+console.info("Done! Your environment variable declaration file");
+console.info(" can be found in types/type-my-env.d.ts.");
+console.info("");
+console.info("Remember to include `types` directory into your");
+console.info(" tsconfig.json configuration!");
