@@ -6,7 +6,7 @@ import {
   readFileSync,
   writeFileSync,
 } from "fs";
-import { parseEnv } from "./dotenv-parser.js";
+import { parseEnv, ParseResult } from "./dotenv-parser.js";
 import { createType } from "./dts.util.js";
 import { ArgumentParser } from "argparse";
 import chalk from "chalk";
@@ -56,44 +56,13 @@ let typesDirPath = path.resolve(process.cwd(), "types");
 let typePath = path.resolve(process.cwd(), "types", "type-my-env.d.ts");
 let encoding = "utf8" as const;
 
-if (parsedArgs.reverse) {
-  console.info("Generating .env file from types/type-my-env.d.ts");
-  if (!existsSync(typePath))
-    throw new Error("declaration file does not exist!");
-  const declarations = await parseDeclarationFile(typePath);
-  const envLines = declarations.map(({ jsDocJoined, inlineComments, env }) => {
-    console.info("Writing env for: " + env);
-    let str = "";
-    if (jsDocJoined) {
-      str += jsDocJoined
-        .split("\n")
-        .map((e) => `# ${e}`)
-        .join("\n");
-      str += "\n";
-    }
-
-    str += `${env}=`;
-
-    if (inlineComments) {
-      str += " #";
-      str += inlineComments.map((e) => e.replace(/\/\//g, "")).join(", ");
-    }
-
-    return str;
-  });
-  if (existsSync(dotenvPath)) {
-    console.warn("Overwriting existing .env file!");
-  }
-  writeFileSync(dotenvPath, envLines.join("\n\n"), { encoding: "utf8" });
-  console.info("Done!");
-  process.exit(0);
-}
-
-function getParsedDotEnv(createMode = false) {
+function getParsedDotEnv(createMode = false, silent = false) {
   if (!existsSync(dotenvPath)) {
     if (createMode) {
       console.info(".env is not found. Writing a new one...");
       writeFileSync(dotenvPath, "", { encoding });
+    } else if (silent) {
+      return { content: "", parsedEnv: [] };
     } else {
       throw new Error("Error: .env does not exist!");
     }
@@ -101,6 +70,72 @@ function getParsedDotEnv(createMode = false) {
   const content = readFileSync(dotenvPath, { encoding });
   const parsedEnv = parseEnv(content);
   return { content, parsedEnv };
+}
+
+if (parsedArgs.reverse) {
+  console.info("Generating .env file from types/type-my-env.d.ts");
+  if (!existsSync(typePath))
+    throw new Error("declaration file does not exist!");
+  const declarations = await parseDeclarationFile(typePath);
+  const { parsedEnv } = getParsedDotEnv(false, true);
+  const parsedEnvDefaultValue = parsedEnv.reduce(
+    (a, { key, value, document, inline }) => {
+      a[key] = {
+        value: value ?? "",
+        env: key,
+        jsDocJoined: document?.map((e) => e.replace(/^\*/, "#"))?.join("\n"),
+        inlineComments: inline ? [inline] : null,
+      };
+      return a;
+    },
+    {} as Record<string, typeof declarations[number] & { value: string }>
+  );
+  declarations.forEach(({ jsDocJoined, inlineComments, env }) => {
+    if (parsedEnvDefaultValue[env]) {
+      parsedEnvDefaultValue[env] = {
+        ...parsedEnvDefaultValue[env],
+        jsDocJoined,
+        inlineComments,
+      };
+    } else {
+      parsedEnvDefaultValue[env] = {
+        env,
+        value: "",
+        jsDocJoined,
+        inlineComments,
+      };
+    }
+  });
+
+  const envLines = Object.values(parsedEnvDefaultValue).map(
+    ({ jsDocJoined, inlineComments, env, value }) => {
+      console.info("Writing env for: " + env);
+      let str = "";
+      if (jsDocJoined) {
+        str += jsDocJoined
+          .split("\n")
+          .map((e) => `# ${e}`)
+          .join("\n");
+        str += "\n";
+      }
+
+      str += `${env}=${value}`;
+
+      if (inlineComments) {
+        str += value.length ? "" : " ";
+        str +=
+          "#" + inlineComments.map((e) => e.replace(/\/\//g, "")).join(", ");
+      }
+
+      return str;
+    }
+  );
+  if (existsSync(dotenvPath)) {
+    console.warn("Overwriting existing .env file!");
+  }
+  writeFileSync(dotenvPath, envLines.join("\n\n"), { encoding: "utf8" });
+  console.info("Done!");
+  process.exit(0);
 }
 
 const { content, parsedEnv } = getParsedDotEnv(!!parsedArgs.ENV);
