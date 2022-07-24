@@ -34,11 +34,6 @@ argparser.add_argument("-r", "--reverse", {
   action: "store_true",
 });
 
-argparser.add_argument("-s", "--string-index", {
-  help: "add string indexing to the type declaration",
-  action: "store_true",
-});
-
 argparser.add_argument("-c", "--create", {
   help: "create a new environment variable",
   type: "str",
