@@ -1,8 +1,9 @@
 {
   "name": "type-my-env",
-  "version": "1.0.5",
+  "version": "1.0.6-alpha.1",
   "description": "Generate typings for your .env! Remember to add the directory `types` into your `typeRoots` in your tsconfig file.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "jest",
     "build": "tsc && ./postbuild",
@@ -12,10 +13,13 @@
   "bin": {
     "type-my-env": "index.js"
   },
-  "keywords": ["dotenv"],
+  "keywords": [
+    "dotenv"
+  ],
   "author": "Ye Yu <rafolwen98@gmail.com>",
   "license": "GPL-3.0",
   "devDependencies": {
+    "@types/argparse": "^2.0.10",
     "@types/jest": "^28.1.5",
     "@types/node": "^18.0.3",
     "jest": "^28.1.3",
@@ -26,5 +30,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ye-yu/ts-type-my-env"
+  },
+  "dependencies": {
+    "argparse": "^2.0.1",
+    "chalk": "^5.0.1"
   }
 }
