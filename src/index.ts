@@ -76,7 +76,7 @@ if (parsedArgs.ENV) {
   if (parsedEnv.find((e) => e.key === parsedArgs.ENV)) {
     console.warn(`Variable ${parsedArgs.ENV} already exists in .env file!`);
   } else {
-    appendFileSync(dotenvPath, `${parsedArgs.ENV}=`, {
+    appendFileSync(dotenvPath, `\n${parsedArgs.ENV}=`, {
       encoding: "utf8",
     });
     parsedEnv.push({
