@@ -1,10 +1,18 @@
 import path from "path";
+import {
+  appendFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from "fs";
 import { parseEnv } from "./dotenv-parser.js";
 import { createType } from "./dts.util.js";
 import { ArgumentParser } from "argparse";
 import chalk from "chalk";
 import _packageJson from "./package.cjs";
 const packageJson = await _packageJson;
+import parseDeclarationFile from "./ts-parser.cjs";
 
 const description =
   chalk.bgBlue("TS") + " Autocomplete your environment variable!";
@@ -26,7 +34,7 @@ argparser.add_argument("-s", "--string-index", {
 
 argparser.add_argument("-c", "--create", {
   help: "create a new environment variable",
-  type: "string",
+  type: "str",
   dest: "ENV",
 });
 
@@ -40,19 +48,44 @@ argparser.add_argument("-v", "--version", {
 });
 
 const parsedArgs = argparser.parse_args();
-console.log({ parsedArgs });
 
 let dotenvPath = path.resolve(process.cwd(), ".env");
 let typesDirPath = path.resolve(process.cwd(), "types");
 let typePath = path.resolve(process.cwd(), "types", "type-my-env.d.ts");
 let encoding = "utf8" as const;
 
-if (!existsSync(dotenvPath)) process.exit();
+if (parsedArgs.reverse) {
+  if (!existsSync(typePath))
+    throw new Error("declaration file does not exist!");
+  const declarations = await parseDeclarationFile(typePath);
+  console.log(declarations);
+  process.exit(0);
+}
 
-const content = readFileSync(dotenvPath, { encoding });
+function getParsedDotEnv() {
+  if (!existsSync(dotenvPath)) throw new Error(".env does not exist");
+  const content = readFileSync(dotenvPath, { encoding });
+  const parsedEnv = parseEnv(content);
+  return parsedEnv;
+}
 
-const parsedEnv = parseEnv(content);
+const parsedEnv = getParsedDotEnv();
+
+if (parsedArgs.ENV) {
+  console.log("Creating environment variable:", parsedArgs.ENV);
+  if (parsedEnv.find((e) => e.key === parsedArgs.ENV)) {
+    console.warn(`Variable ${parsedArgs.ENV} already exists in .env file!`);
+  } else {
+    appendFileSync(dotenvPath, `${parsedArgs.ENV}=`, {
+      encoding: "utf8",
+    });
+    parsedEnv.push({
+      key: parsedArgs.ENV,
+      type: "string",
+    });
+  }
+  console.log("Updating declaration file");
+}
 
 if (!existsSync(typesDirPath)) mkdirSync(typesDirPath);
-
 writeFileSync(typePath, createType(parsedEnv));
