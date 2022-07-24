@@ -63,3 +63,13 @@ Now, whenever you type your `process.env.` in your code editor, you will benefit
 from the typings autocomplete!
 
 ![autocomplete](https://imgur.com/jxR2XrI.png)
+
+# More CLI Options
+
+## -r | --reverse
+
+This option will generate the .env based on the declaration file instead. This will overwrite the original `.env` file, so make sure you made a backup (since you are not supposed to version control your .env file anyway)!
+
+## -c | --create ENV_NAME
+
+This will create a variable to your `.env` file, and then update the type declaration file.
