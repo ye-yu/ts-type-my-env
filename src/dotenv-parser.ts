@@ -56,8 +56,8 @@ export function parseEnv(src: string | Buffer) {
         const trimmedValue = value.trim();
 
         let type = "string";
-        if (!isNaN(+trimmedValue)) {
-          type = trimmedValue.includes(".") ? "double" : "integer";
+        if (isFinite(+trimmedValue)) {
+          type = "number";
         } else if (booleanLike.has(trimmedValue.toLocaleLowerCase("en-gb"))) {
           type = "boolean";
         }
