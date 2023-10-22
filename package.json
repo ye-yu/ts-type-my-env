@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "description": "Generate typings for your .env! Remember to add the directory `types` into your `typeRoots` in your tsconfig file.",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "test": "jest",
     "build": "tsc && ./postbuild",
